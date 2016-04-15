@@ -355,39 +355,87 @@ def creaTroncoConoSolidoCapa(drawing,anguloIni,anguloFin,base,altura,colorLine3,
 		drawing.save()
 	return px0,py0,pxd,pyd,px0a,py0a,pxda,pyda
 
+def creaCirculosBaseHabilidades(drawing,radio,anchoAro,posIniX,posIniY,numCirculos,espacio,capa):
+        pxDstn=posIniX
+        pyDstn=posIniY
+        for i in range (1, numCirculos):
+                #pxDstn,pyDstn=drawCircleColouredLayer(drawing,radio,pxDstn,pyDstn,0,capa)
+                creaAro(drawing,radio,anchoAro,pxDstn,pyDstn,0,100,capa)
+                pxDstn=pxDstn+espacio
+        return pxDstn,pyDstn
+
+def creaCirculosColorHabilidades(drawing,radio,anchoAro,posIniX,posIniY,numCirculos,espacio,capa):
+        pxDstn=posIniX
+        pyDstn=posIniY
+        for i in range (1, numCirculos):
+                #pxDstn,pyDstn=drawCircleColouredLayer(drawing,radio,pxDstn,pyDstn,0,capa)
+                creaAro(drawing,radio,anchoAro,pxDstn,pyDstn,i,100,capa)
+                pxDstn=pxDstn+espacio
+        return pxDstn,pyDstn
+    
+def creaAro(drawing,radioExt,anchoAro,posIniX,posIniY,color,porcentaje,capa):
+        if (porcentaje==100):
+                drawCircleColouredLayer(drawing,radioExt,posIniX,posIniY,color,capa)
+                drawCircleColouredLayer(drawing,radioExt - anchoAro,posIniX,posIniY,color,capa)
+        else:
+                creaTroncoConoCapa(drawing,0,traducePorcentajeAAngulo(porcentaje),radioExt - anchoAro,radioExt,color,capa)
+                #creaTroncoConoCapa(drawing,anguloIni,anguloFin,base,altura,colorLine3,capa):
+            
+def traducePorcentajeAAngulo(porcentaje):
+        ang=(360*porcentaje)/100
+        return ang
+    
 def main():
-	anguloIni=30
-	anguloFin=60
+	anguloIni=0.0
+	anguloFin=359.9
 	base=40
-	altura=80
+	altura=55
 	anguloIni1=60
 	anguloFin1=100
 	altura1=60
 	altura2=70
 	primeraLinea=5
 	segundaLinea=10
-	drawing = dxf.drawing('habilidades.dxf')
-#set value
+	drawing = dxf.drawing('habilidades.dxf') 
+        #set value
 #	drawing.header['$ANGBASE'] = 90
 #	drawing.header['$ANGDIR'] = 1
-	px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,30.0,60.0,base,altura,colorLine2,'sector1')
-	escribeEnArcoCapa(drawing,'en',centroX,centroY,30.0,60.0,altura-primeraLinea,colorLine,3.0,'letrasSector1',0)
-	px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,60.0,100.0,base,altura1,colorLine3,'sector2')
-	escribeEnArcoCapa(drawing,'un',centroX,centroY,60.0,100.0,altura1-primeraLinea,colorLine,3.0,'letrasSector2',0)
-	px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,100.0,180.0,base,altura2,colorLine4,'sector3')
-	escribeEnArcoCapa(drawing,'lugar',centroX,centroY,100.0,180.0,altura2-primeraLinea,colorLine,3.0,'letrasSector3',0)
-	px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,180.0,210.0,base,65,colorLine5,'sector4')
-	escribeEnArcoCapa(drawing,'de',centroX,centroY,180.0,210.0,65-primeraLinea,colorLine,3.0,'letrasSector4',0)
-	px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,210.0,270.0,base,50,colorLine6,'sector5')
-	escribeEnArcoCapa(drawing,'la',centroX,centroY,210.0,270.0,50-primeraLinea,colorLine,3.0,'letrasSector5',0)
-	px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,270.0,360.0,base,75,colorLine7,'sector6')
-	escribeEnArcoCapa(drawing,'mancha',centroX,centroY,270.0,360.0,75-primeraLinea,colorLine,3.0,'letrasSector6',0)
-	testeaAlineacionLetras(drawing,30.0,60.0,centroX,centroY,altura * 2,colorLine,'Guias')
-	testeaAlineacionLetras(drawing,60.0,100.0,centroX,centroY,altura * 2,colorLine,'Guias')
-	testeaAlineacionLetras(drawing,100.0,180.0,centroX,centroY,altura * 2,colorLine,'Guias')
-	testeaAlineacionLetras(drawing,180.0,210.0,centroX,centroY,altura * 2,colorLine,'Guias')
-	testeaAlineacionLetras(drawing,210.0,270.0,centroX,centroY,altura * 2,colorLine,'Guias')
-	testeaAlineacionLetras(drawing,270.0,360.0,centroX,centroY,altura * 2,colorLine,'Guias')
+	#px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,30.0,60.0,base,altura,colorLine2,'sector1')
+	#px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,anguloIni,anguloFin,base,altura,colorLine2,'sector1')
+##	drawCircleColouredLayer(drawing,40,20,20,colorLine2,'sector1')
+##	drawCircleColouredLayer(drawing,55,20,20,colorLine2,'sector1')
+##	drawCircleColouredLayer(drawing,40,180,20,colorLine3,'sector1')
+##	drawCircleColouredLayer(drawing,55,180,20,colorLine3,'sector1')
+##	drawCircleColouredLayer(drawing,40,320,20,colorLine4,'sector1')
+##	drawCircleColouredLayer(drawing,55,320,20,colorLine4,'sector1')
+##	drawCircleColouredLayer(drawing,40,320,20,colorLine5,'sector1')
+##	drawCircleColouredLayer(drawing,55,320,20,colorLine5,'sector1')
+##  creaCirculosBaseHabilidades(drawing,40,9,20,20,7,100,'base')
+	creaAro(drawing,40,9,1,10,1,75,'aro1')
+	creaAro(drawing,40,9,20,10,2,30,'aro1')
+	creaAro(drawing,40,9,40,10,3,80,'aro1')
+	creaAro(drawing,40,9,60,10,4,25,'aro1')
+	creaAro(drawing,40,9,80,10,5,10,'aro1')
+	creaAro(drawing,40,9,100,10,6,85,'aro1')
+        #creaCirculosColorHabilidades(drawing,40,9,20,20,7,100,'color1')
+	#drawCircleColouredLayer(draw,radio,pxCentre,pyCentre,colorA,capa)
+	#escribeEnArcoCapa(drawing,'en',centroX,centroY,30.0,60.0,altura-primeraLinea,colorLine,3.0,'letrasSector1',0)
+	#px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,60.0,100.0,base,altura1,colorLine3,'sector2')
+	#escribeEnArcoCapa(drawing,'un',centroX,centroY,60.0,100.0,altura1-primeraLinea,colorLine,3.0,'letrasSector2',0)
+	#px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,100.0,180.0,base,altura2,colorLine4,'sector3')
+	#escribeEnArcoCapa(drawing,'lugar',centroX,centroY,100.0,180.0,altura2-primeraLinea,colorLine,3.0,'letrasSector3',0)
+	#px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,180.0,210.0,base,65,colorLine5,'sector4')
+	#escribeEnArcoCapa(drawing,'de',centroX,centroY,180.0,210.0,65-primeraLinea,colorLine,3.0,'letrasSector4',0)
+	#px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,210.0,270.0,base,50,colorLine6,'sector5')
+	#escribeEnArcoCapa(drawing,'la',centroX,centroY,210.0,270.0,50-primeraLinea,colorLine,3.0,'letrasSector5',0)
+	#px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,270.0,360.0,base,75,colorLine7,'sector6')
+	#escribeEnArcoCapa(drawing,'mancha',centroX,centroY,270.0,360.0,75-primeraLinea,colorLine,3.0,'letrasSector6',0)
+	#testeaAlineacionLetras(drawing,30.0,60.0,centroX,centroY,altura * 2,colorLine,'Guias')
+	#testeaAlineacionLetras(drawing,60.0,100.0,centroX,centroY,altura * 2,colorLine,'Guias')
+	#testeaAlineacionLetras(drawing,100.0,180.0,centroX,centroY,altura * 2,colorLine,'Guias')
+	#testeaAlineacionLetras(drawing,180.0,210.0,centroX,centroY,altura * 2,colorLine,'Guias')
+	#testeaAlineacionLetras(drawing,210.0,270.0,centroX,centroY,altura * 2,colorLine,'Guias')
+	#testeaAlineacionLetras(drawing,270.0,360.0,centroX,centroY,altura * 2,colorLine,'Guias')
 	#escribeEnArcoCapa(drawing,'hola esta es la creacion',centroX,centroY,base,anguloIni,anguloFin,colorLine3,12,'sector1',0,330)
 	# px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoCono(drawing,anguloIni,anguloFin,base,altura,colorLine3)
 	# px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoCono(drawing,anguloIni1,anguloFin1,base1,altura1,colorLine2

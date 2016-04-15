@@ -366,7 +366,7 @@ def main():
 	altura2=70
 	primeraLinea=5
 	segundaLinea=10
-	drawing = dxf.drawing('habilidades.dxf')
+	drawing = dxf.drawing('curriculo.dxf')
 #set value
 #	drawing.header['$ANGBASE'] = 90
 #	drawing.header['$ANGDIR'] = 1
