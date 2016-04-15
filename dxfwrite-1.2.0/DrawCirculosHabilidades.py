@@ -313,6 +313,23 @@ def drawCircle(draw, cx, cy ,radius):
 	cy +=radius
 	return cx,cy
 
+def creaTroncoConoCapaConDesplazamiento(drawing,anguloIni,anguloFin,base,altura,centroX,centroY,colorLine3,capa):
+#prev: drawing un dxf.drawing valido
+#post: dibuja un tronco cono con centro en centroX y centroY y devuelve sus puntos extremos
+#		px0,py0 es el punto inferior del angulo inicial
+#		pxd,pyd es el punto inferior del angulo final
+#		px0a,py0a es el punto superior del angulo inicial
+#		pxda,pyda es el punto superior del angulo inicial
+	dibujaArcoRelojColoreadoCapa(drawing,centroX,centroY,base,anguloIni,anguloFin,colorLine3,capa)
+	dibujaArcoRelojColoreadoCapa(drawing,centroX,centroY,altura,anguloIni,anguloFin,colorLine3,capa)
+	px0,py0 = damePtoArcoReloj(centroX,centroY,anguloIni,base)
+	pxd,pyd = damePtoArcoReloj(centroX,centroY,anguloFin,base)
+	px0a,py0a = damePtoArcoReloj(centroX,centroY,anguloIni,altura)
+	pxda,pyda = damePtoArcoReloj(centroX,centroY,anguloFin,altura)
+	drawLineColouredLayer(drawing, px0, py0, px0a,  py0a, colorLine3,capa)
+	drawLineColouredLayer(drawing, pxd, pyd, pxda,  pyda, colorLine3,capa)
+	drawing.save()
+	return px0,py0,pxd,pyd,px0a,py0a,pxda,pyda
 
 def creaTroncoConoCapa(drawing,anguloIni,anguloFin,base,altura,colorLine3,capa):
 #prev: drawing un dxf.drawing valido
@@ -354,8 +371,37 @@ def creaTroncoConoSolidoCapa(drawing,anguloIni,anguloFin,base,altura,colorLine3,
 			dibujaArcoRelojColoreadoCapa(drawing,centroX,centroY,i+k,anguloIni,anguloFin,colorLine3,capa)
 		drawing.save()
 	return px0,py0,pxd,pyd,px0a,py0a,pxda,pyda
+    
+def creaProcentajeCirculos(drawing,posIniX,posIniY,vector,espacio,capaNumeros):
+    #pre: vector es un diccionario con nombre y porcentaje de habilidad
+    #     porcentaje <=100
+    #post: muestra los valores de vector en el centro de cada aro
+    #       pintando 5 colores
+##        writeTextNoAling(drawing,txt,px0,py0,size,colorTextt,layerTxt,angRotation)
+        listaKeys=[]
+        listaValues=[]
+        listaKeys.extend(vector.keys())
+        listaValues.extend(vector.values())
+        numCirculos=len(vector)
+        pxDstn=posIniX
+        pyDstn=posIniY
+        for i in range (1, numCirculos):
+                txt=str (listaValues[i])+" %"
+                writeTextNoAling(drawing,txt,pxDstn,pyDstn,8,0,capaNumeros,0)
+                pxDstn=pxDstn+espacio
 
+def muestraCirculosHabilidades(drawing,radio,anchoAro,posIniX,posIniY,vector,espacio,capaBase,capaColor,capaNumeros):
+    #pre: vector es un diccionario con nombre y porcentaje de habilidad
+    #    anchoAro la distancia entre elcirculo exterior y el interior, porcentaje <=100
+    #post: dibuja tantos aros como claves hay en vector y completados segun los valores de vector
+    #       pintando 5 colores
+        creaCirculosBaseHabilidadesVector(drawing,radio,anchoAro,posIniX,posIniY,vector,espacio,capaBase)
+        creaCirculosColorHabilidadesVector(drawing,radio,anchoAro,posIniX,posIniY,vector,espacio,capaColor)
+        creaProcentajeCirculos(drawing,posIniX,posIniY,vector,espacio,capaNumeros)
+##	creaCirculosColorHabilidadesVector(drawing,radio,anchoAro,PosIniX,PosIniY,vector,espacio,capaColor)
+    
 def creaCirculosBaseHabilidades(drawing,radio,anchoAro,posIniX,posIniY,numCirculos,espacio,capa):
+##        numCirculos=len(vector)
         pxDstn=posIniX
         pyDstn=posIniY
         for i in range (1, numCirculos):
@@ -364,21 +410,42 @@ def creaCirculosBaseHabilidades(drawing,radio,anchoAro,posIniX,posIniY,numCircul
                 pxDstn=pxDstn+espacio
         return pxDstn,pyDstn
 
-def creaCirculosColorHabilidades(drawing,radio,anchoAro,posIniX,posIniY,numCirculos,espacio,capa):
+def creaCirculosBaseHabilidadesVector(drawing,radio,anchoAro,posIniX,posIniY,vector,espacio,capa):
+        numCirculos=len(vector)
         pxDstn=posIniX
         pyDstn=posIniY
         for i in range (1, numCirculos):
                 #pxDstn,pyDstn=drawCircleColouredLayer(drawing,radio,pxDstn,pyDstn,0,capa)
-                creaAro(drawing,radio,anchoAro,pxDstn,pyDstn,i,100,capa)
+                creaAro(drawing,radio,anchoAro,pxDstn,pyDstn,0,100,capa)
+                pxDstn=pxDstn+espacio
+        return pxDstn,pyDstn
+
+
+def creaCirculosColorHabilidadesVector(drawing,radio,anchoAro,posIniX,posIniY,vector,espacio,capa):
+    #pre: vector es un diccionario con nombre y porcentaje de habilidad
+    #post: dibuja tantos aros como claves hay en vector y completados segun los valores de vector
+    #       pintando 5 colores
+        listaKeys=[]
+        listaValues=[]
+        listaKeys.extend(vector.keys())
+        listaValues.extend(vector.values())
+        numCirculos=len(vector)
+        pxDstn=posIniX
+        pyDstn=posIniY
+        for i in range (1, numCirculos):
+                #pxDstn,pyDstn=drawCircleColouredLayer(drawing,radio,pxDstn,pyDstn,0,capa)
+                creaAro(drawing,radio,anchoAro,pxDstn,pyDstn,(i%5)+1,vector[listaKeys[i]],capa)
                 pxDstn=pxDstn+espacio
         return pxDstn,pyDstn
     
 def creaAro(drawing,radioExt,anchoAro,posIniX,posIniY,color,porcentaje,capa):
+    #pre: anchoAro distantia entre elcirculo exterior y el interior, porcentaje <=100
+    #post: dibuja dos circulos concentricos si porcentaje < 100 no se completa el aro
         if (porcentaje==100):
                 drawCircleColouredLayer(drawing,radioExt,posIniX,posIniY,color,capa)
                 drawCircleColouredLayer(drawing,radioExt - anchoAro,posIniX,posIniY,color,capa)
         else:
-                creaTroncoConoCapa(drawing,0,traducePorcentajeAAngulo(porcentaje),radioExt - anchoAro,radioExt,color,capa)
+                creaTroncoConoCapaConDesplazamiento(drawing,0,traducePorcentajeAAngulo(porcentaje),radioExt - anchoAro,radioExt,posIniX,posIniY,color,capa)
                 #creaTroncoConoCapa(drawing,anguloIni,anguloFin,base,altura,colorLine3,capa):
             
 def traducePorcentajeAAngulo(porcentaje):
@@ -396,27 +463,29 @@ def main():
 	altura2=70
 	primeraLinea=5
 	segundaLinea=10
-	drawing = dxf.drawing('habilidades.dxf') 
+	espacio=100
+	drawing = dxf.drawing('habilidades.dxf')
+	vector={'.Net':55,'Photoshop':50,'Pinnacle':50,'Illustrator':55,'Php':70,'Css':60,'MySql':50,'Dreamweaver':80,'Java':70,'Android':50} 
         #set value
-#	drawing.header['$ANGBASE'] = 90
-#	drawing.header['$ANGDIR'] = 1
-	#px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,30.0,60.0,base,altura,colorLine2,'sector1')
-	#px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,anguloIni,anguloFin,base,altura,colorLine2,'sector1')
-##	drawCircleColouredLayer(drawing,40,20,20,colorLine2,'sector1')
-##	drawCircleColouredLayer(drawing,55,20,20,colorLine2,'sector1')
-##	drawCircleColouredLayer(drawing,40,180,20,colorLine3,'sector1')
-##	drawCircleColouredLayer(drawing,55,180,20,colorLine3,'sector1')
-##	drawCircleColouredLayer(drawing,40,320,20,colorLine4,'sector1')
-##	drawCircleColouredLayer(drawing,55,320,20,colorLine4,'sector1')
-##	drawCircleColouredLayer(drawing,40,320,20,colorLine5,'sector1')
 ##	drawCircleColouredLayer(drawing,55,320,20,colorLine5,'sector1')
-##  creaCirculosBaseHabilidades(drawing,40,9,20,20,7,100,'base')
-	creaAro(drawing,40,9,1,10,1,75,'aro1')
-	creaAro(drawing,40,9,20,10,2,30,'aro1')
-	creaAro(drawing,40,9,40,10,3,80,'aro1')
-	creaAro(drawing,40,9,60,10,4,25,'aro1')
-	creaAro(drawing,40,9,80,10,5,10,'aro1')
-	creaAro(drawing,40,9,100,10,6,85,'aro1')
+	Px=20
+	Py=20
+##	creaCirculosBaseHabilidades(drawing,40,9,Px,Py,vector,espacio,'base')
+##	creaCirculosColorHabilidadesVector(drawing,40,9,Px,Py,vector,espacio,'circulos')
+	muestraCirculosHabilidades(drawing,40,9,Px,Py,vector,espacio,'base','circulos','numeros')
+##	muestraCirculosHabilidades(drawing,radio,anchoAro,posIniX,posIniY,vector,espacio,capaBase,capaColor,capaNumeros)
+	##	def creaCirculosColorHabilidadesVector(drawing,vector,radio,anchoAro,posIniX,posIniY,numCirculos,espacio,capa):
+##	creaAro(drawing,40,9,Px,Py,1,vector['Photoshop'],'aro1')
+##	Px=Px+espacio
+##	creaAro(drawing,40,9,Px,Py,2,vector['Pinnacle'],'aro1')
+##	Px=Px+espacio
+##	creaAro(drawing,40,9,Px,Py,3,vector['Illustrator'],'aro1')
+##	Px=Px+espacio
+##	creaAro(drawing,40,9,Px,Py,4,vector['Php'],'aro1')
+##	Px=Px+espacio
+##	creaAro(drawing,40,9,Px,Py,5,vector['Css'],'aro1')
+##	Px=Px+espacio
+##	creaAro(drawing,40,9,Px,Py,6,vector['MySql'],'aro1')
         #creaCirculosColorHabilidades(drawing,40,9,20,20,7,100,'color1')
 	#drawCircleColouredLayer(draw,radio,pxCentre,pyCentre,colorA,capa)
 	#escribeEnArcoCapa(drawing,'en',centroX,centroY,30.0,60.0,altura-primeraLinea,colorLine,3.0,'letrasSector1',0)
