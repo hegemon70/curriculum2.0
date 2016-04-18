@@ -180,6 +180,7 @@ def escribeEnArcoCapa(draw,texto,xCenter,yCenter,anguloIni,anguloFin,radio,color
 	text.height = tamFte
 	text.rotation = rot
 	text.halign = dxfwrite.CENTER
+##	text.halign = dxfwrite.ALIGNED
 	if (espejo != 0):
 		if (espejo == 1):
 			text.mirror = dxfwrite.MIRROR_X
@@ -283,6 +284,20 @@ def writeTextNoAling(draw,txt,px0,py0,size,colorTextt,layerTxt,angRotation):
 	#text['alignpoint']=alignPx,alignPy
 	draw.add(text)
 
+def writeTextAling(draw,txt,px0,py0,size,colorTextt,layerTxt):
+	#text = dxf.text(txt, (px0,py0), height=size, rotation=angRotation)
+	print(txt)
+	text = dxf.mtext(txt,(px0,py0))
+	text.layer = layerTxt
+	text.color = colorTextt
+	text.height = size
+##	text['layer'] = layerTxt
+##	text['color'] = colorTextt
+	#text['alignpoint']=alignPx,alignPy
+	#text['alignpoint']=px0,py0
+	draw.add(text)
+	
+
 def writeTextLeft(draw,txt,px0,py0,size,colorTextt,layerTxt,angRotation):
 	text = dxf.text(txt, (px0,py0), height=size, rotation=angRotation)
 	text['layer'] = layerTxt
@@ -303,6 +318,90 @@ def writeText(draw,txt,alignpx,alignpy,size,colorTextt,layerTxt,angRotation):
 	text['color'] = colorTextt
 	text['height']= size
 	draw.add(text)
+'''
+def damePuntocentral(txt,px0,py0,tamfte):
+	#pre: txt no vacio al menos una letra, tamfte entre 6 y 36
+        #post: devuelve el inicio la posicion para que quede centrado
+	numLetras=len(txt)
+	if tamfte < 6:
+		ratio=7
+	elif tamfte ==6:
+		ratio=8
+	elif tamfte ==7:
+		ratio=9
+	elif tamfte ==7.5:
+		ratio=10
+	elif tamfte ==8:
+		ratio=11
+	elif tamfte ==9:
+		ratio=12
+	elif tamfte ==10:
+		ratio=13
+	elif tamfte ==10.5:
+		ratio=14
+	elif tamfte ==11:
+		ratio=15
+	elif tamfte ==12:
+		ratio=16
+	elif tamfte ==13:
+		ratio=17
+	elif tamfte ==13.5:
+		ratio=18
+	elif tamfte ==14:
+		ratio=19
+	elif tamfte ==14.5:
+		ratio=20
+	elif tamfte ==15:
+		ratio=21
+	elif tamfte ==16:
+		ratio=22
+	elif tamfte ==17:
+		ratio=23
+	elif tamfte ==18:
+		ratio=24
+	elif tamfte ==19:
+		ratio=25
+	elif tamfte ==20:
+		ratio=26
+	elif tamfte ==21:
+		ratio=27
+	elif tamfte ==22:
+		ratio=29
+	elif tamfte ==23:
+		ratio=30
+	elif tamfte ==24:
+		ratio=32
+	elif tamfte ==25:
+		ratio=33
+	elif tamfte ==26:
+		ratio=35
+	elif tamfte ==27:
+		ratio=36
+	elif tamfte ==28:
+		ratio=37
+	elif tamfte ==29:
+		ratio=38
+	elif tamfte ==30:
+		ratio=40
+	elif tamfte ==31:
+		ratio=41
+	elif tamfte ==32:
+		ratio=42
+	elif tamfte ==33:
+		ratio=43
+	elif tamfte ==34:
+		ratio=45
+	elif tamfte ==35:
+		ratio=46
+	elif tamfte ==36:
+		ratio=48
+	else:
+		ratio=49
+	espacio=numLetras * ratio /2
+	print ("el espacio es:" + espacio + "|")
+	return (px0 - espacio),py0
+'''
+
 
 def drawCircle(draw, cx, cy ,radius):
 #pre: draw=dxf.drawing('filename.dxf'), radius > 0
@@ -372,7 +471,7 @@ def creaTroncoConoSolidoCapa(drawing,anguloIni,anguloFin,base,altura,colorLine3,
 		drawing.save()
 	return px0,py0,pxd,pyd,px0a,py0a,pxda,pyda
     
-def creaProcentajeCirculos(drawing,posIniX,posIniY,vector,espacio,capaNumeros):
+def creaPorcentajeCirculos(drawing,posIniX,posIniY,vector,espacio,capaNumeros):
     #pre: vector es un diccionario con nombre y porcentaje de habilidad
     #     porcentaje <=100
     #post: muestra los valores de vector en el centro de cada aro
@@ -387,17 +486,35 @@ def creaProcentajeCirculos(drawing,posIniX,posIniY,vector,espacio,capaNumeros):
         pyDstn=posIniY
         for i in range (1, numCirculos):
                 txt=str (listaValues[i])+" %"
+                #writeTextNoAling(drawing,txt,pxDstn,pyDstn,8,0,capaNumeros,0)
                 writeTextNoAling(drawing,txt,pxDstn,pyDstn,8,0,capaNumeros,0)
                 pxDstn=pxDstn+espacio
 
-def muestraCirculosHabilidades(drawing,radio,anchoAro,posIniX,posIniY,vector,espacio,capaBase,capaColor,capaNumeros):
+def creaTituloCirculos(drawing,posIniX,posIniY,vector,espacio,desplazamientoVertical,capaNumeros):
+   #pre: vector es un diccionario con nombre como key y porcentaje de habilidad como value
+    #post: muestra las keys del diccionario vector en bajo cada aro
+        listaKeys=[]
+        listaValues=[]
+        listaKeys.extend(vector.keys())
+#        listaValues.extend(vector.values())
+        pxDstn=posIniX
+        numCirculos=len(vector)
+        pyDstn=posIniY - desplazamientoVertical
+        for i in range (1, numCirculos):
+                txt=str (listaKeys[i])
+                #writeTextNoAling(drawing,txt,pxDstn,pyDstn,8,0,capaNumeros,0)
+                writeTextNoAling(drawing,txt,pxDstn,pyDstn,8,0,capaNumeros,0)
+                pxDstn=pxDstn+espacio
+
+def muestraCirculosHabilidades(drawing,radio,anchoAro,posIniX,posIniY,vector,espacio,capaBase,capaColor,capaNumeros,capaTitulo):
     #pre: vector es un diccionario con nombre y porcentaje de habilidad
     #    anchoAro la distancia entre elcirculo exterior y el interior, porcentaje <=100
     #post: dibuja tantos aros como claves hay en vector y completados segun los valores de vector
     #       pintando 5 colores
         creaCirculosBaseHabilidadesVector(drawing,radio,anchoAro,posIniX,posIniY,vector,espacio,capaBase)
         creaCirculosColorHabilidadesVector(drawing,radio,anchoAro,posIniX,posIniY,vector,espacio,capaColor)
-        creaProcentajeCirculos(drawing,posIniX,posIniY,vector,espacio,capaNumeros)
+        creaPorcentajeCirculos(drawing,posIniX,posIniY,vector,espacio,capaNumeros)
+        creaTituloCirculos(drawing,posIniX,posIniY,vector,espacio,radio +(anchoAro * 2),capaTitulo)
 ##	creaCirculosColorHabilidadesVector(drawing,radio,anchoAro,PosIniX,PosIniY,vector,espacio,capaColor)
     
 def creaCirculosBaseHabilidades(drawing,radio,anchoAro,posIniX,posIniY,numCirculos,espacio,capa):
@@ -472,44 +589,21 @@ def main():
 	Py=20
 ##	creaCirculosBaseHabilidades(drawing,40,9,Px,Py,vector,espacio,'base')
 ##	creaCirculosColorHabilidadesVector(drawing,40,9,Px,Py,vector,espacio,'circulos')
-	muestraCirculosHabilidades(drawing,40,9,Px,Py,vector,espacio,'base','circulos','numeros')
+##def testeaAlineacionLetras(draw,angIni,angFin,xCenter,yCenter,radio,color,capa):
+	#testeaAlineacionLetras(drawing,0,0,200,200,40,0,'numeros')
+	#print (Px)
+##	escribeEnArcoCapa(drawing,"hola",200,200,0,0,0,0,8,'numeros')
+	#Px,Py=damePuntocentral("hola",20,5,8)
+	#print (Px)
+	#def writeTextAling(draw,txt,px0,py0,size,colorTextt,layerTxt,tamFte):
+	#writeTextAling(drawing,"hola",200,200,8,0,'numeros')
+##	writeText(drawing,"hola",20,5,8,0,'numeros',0)
+##	writeTextNoAling(drawing,"",40,5,8,0,'numeros',0)
+##	writeText(drawing,"adios",40,5,8,0,'numeros',0)
+	muestraCirculosHabilidades(drawing,40,9,Px,Py,vector,espacio,'base','circulos','numeros','aplicacion')
 ##	muestraCirculosHabilidades(drawing,radio,anchoAro,posIniX,posIniY,vector,espacio,capaBase,capaColor,capaNumeros)
 	##	def creaCirculosColorHabilidadesVector(drawing,vector,radio,anchoAro,posIniX,posIniY,numCirculos,espacio,capa):
-##	creaAro(drawing,40,9,Px,Py,1,vector['Photoshop'],'aro1')
-##	Px=Px+espacio
-##	creaAro(drawing,40,9,Px,Py,2,vector['Pinnacle'],'aro1')
-##	Px=Px+espacio
-##	creaAro(drawing,40,9,Px,Py,3,vector['Illustrator'],'aro1')
-##	Px=Px+espacio
-##	creaAro(drawing,40,9,Px,Py,4,vector['Php'],'aro1')
-##	Px=Px+espacio
-##	creaAro(drawing,40,9,Px,Py,5,vector['Css'],'aro1')
-##	Px=Px+espacio
-##	creaAro(drawing,40,9,Px,Py,6,vector['MySql'],'aro1')
-        #creaCirculosColorHabilidades(drawing,40,9,20,20,7,100,'color1')
-	#drawCircleColouredLayer(draw,radio,pxCentre,pyCentre,colorA,capa)
-	#escribeEnArcoCapa(drawing,'en',centroX,centroY,30.0,60.0,altura-primeraLinea,colorLine,3.0,'letrasSector1',0)
-	#px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,60.0,100.0,base,altura1,colorLine3,'sector2')
-	#escribeEnArcoCapa(drawing,'un',centroX,centroY,60.0,100.0,altura1-primeraLinea,colorLine,3.0,'letrasSector2',0)
-	#px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,100.0,180.0,base,altura2,colorLine4,'sector3')
-	#escribeEnArcoCapa(drawing,'lugar',centroX,centroY,100.0,180.0,altura2-primeraLinea,colorLine,3.0,'letrasSector3',0)
-	#px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,180.0,210.0,base,65,colorLine5,'sector4')
-	#escribeEnArcoCapa(drawing,'de',centroX,centroY,180.0,210.0,65-primeraLinea,colorLine,3.0,'letrasSector4',0)
-	#px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,210.0,270.0,base,50,colorLine6,'sector5')
-	#escribeEnArcoCapa(drawing,'la',centroX,centroY,210.0,270.0,50-primeraLinea,colorLine,3.0,'letrasSector5',0)
-	#px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoConoSolidoCapa(drawing,270.0,360.0,base,75,colorLine7,'sector6')
-	#escribeEnArcoCapa(drawing,'mancha',centroX,centroY,270.0,360.0,75-primeraLinea,colorLine,3.0,'letrasSector6',0)
-	#testeaAlineacionLetras(drawing,30.0,60.0,centroX,centroY,altura * 2,colorLine,'Guias')
-	#testeaAlineacionLetras(drawing,60.0,100.0,centroX,centroY,altura * 2,colorLine,'Guias')
-	#testeaAlineacionLetras(drawing,100.0,180.0,centroX,centroY,altura * 2,colorLine,'Guias')
-	#testeaAlineacionLetras(drawing,180.0,210.0,centroX,centroY,altura * 2,colorLine,'Guias')
-	#testeaAlineacionLetras(drawing,210.0,270.0,centroX,centroY,altura * 2,colorLine,'Guias')
-	#testeaAlineacionLetras(drawing,270.0,360.0,centroX,centroY,altura * 2,colorLine,'Guias')
-	#escribeEnArcoCapa(drawing,'hola esta es la creacion',centroX,centroY,base,anguloIni,anguloFin,colorLine3,12,'sector1',0,330)
-	# px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoCono(drawing,anguloIni,anguloFin,base,altura,colorLine3)
-	# px0,py0,pxd,pyd,px0a,py0a,pxda,pyda=creaTroncoCono(drawing,anguloIni1,anguloFin1,base1,altura1,colorLine2
-	#--------------------------------
-	#writeTextNoAling(drawing,'universidad',px0,py0,12,5,currentLayer,0)
+
 	#escribeEnArco(drawing,'universidad',centroX,centroY,base,anguloIni,anguloFin,colorLine,5)
 	drawing.save()
 	#-----------------------------------------------------------------
